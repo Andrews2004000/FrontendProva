@@ -8,7 +8,7 @@
               
                </v-toolbar-title>
                <v-spacer></v-spacer>
-             <v-btn class="orange text" @click="changeAccounDetails">Save</v-btn>
+             <v-btn class="orange text" @click="changeAccountDetails">Save</v-btn>
 
         </v-app-bar>
            <v-expansion-panels class="pannel-body">
@@ -28,7 +28,7 @@
               label="UserName"
               placeholder="Username"
               v-model="authInput.username"
-              :rules="rules.inputUser"
+              :rules="rules.nameRules"
             
             ></v-text-field>
             </v-col>
@@ -38,7 +38,7 @@
               label="Email"
               placeholder="Email"
               v-model="authInput.email"
-              :rules="rules.EmailUser"
+              :rules="rules.emailUser"
             
             ></v-text-field>
             </v-col>
@@ -48,8 +48,8 @@
         outlined
               label="ChangePassword"
               placeholder="ChangePassword"
-              v-model="authInput.changePassword"
-              :rules="rules.inputPassword"
+              v-model="authInput.password"
+              :rules="rules.changePasswordRules"
             
             ></v-text-field>
             </v-col>
@@ -59,7 +59,7 @@
               label="ChangeUserPhoto"
               placeholder="ChnageUserPhoto"
               v-model="authInput.ChangeUserPhoto"
-              :rules="rules.inputPassword"
+              :rules="rules.nameRules"
             
             ></v-text-field>
           
@@ -82,7 +82,7 @@
         
    
       
-            <v-btn class="red" @click="deleteAccountHandler">
+            <v-btn class="red">
                 Delete You Account Permanently
             </v-btn>
         </v-expansion-panel-content>
@@ -100,7 +100,7 @@ export default {
         return{
             authInput:{},
             isAuthInputValid:true,
-            drawer:false,
+            
              inputUser:[
             v => v.length >= 5 || 'Minimun Length is 5 Characthers'
         ],
@@ -113,18 +113,22 @@ export default {
         }
     },
     methods:{
-             ...mapActions(["changeAccounDetails","DeleteUser"]),
+             ...mapActions(["changeAccountDetails"]),
         async ChangeAccountDetails(){
 if(this.isAuthInputValid){
+    console.log('1')
     const inputData = {...this.authInput};
     Object.keys(inputData).forEach(k=>{
+        console.log('2')
         if(!inputData[k]){
             delete inputData[k];
         }
     });
-    const data = await this.changeAccounDetails(inputData);
+    console.log('3')
+    const data = await this.changeAccountDetails(inputData);
     console.log(data)
-    this.dialog = false;
+    
+    console.log('4')
     this.reset();
 }
         },
@@ -132,7 +136,7 @@ if(this.isAuthInputValid){
             if (!confirm("Are you sure to exit without saving?")) {
                 return;
             }
-            this.dialog = false;
+          
             this.reset();
         },
         reset() {
@@ -141,26 +145,12 @@ if(this.isAuthInputValid){
         initialize() {
             this.authInput.username = this.userData.username;
             this.authInput.email = this.userData.email;
-            this.authInput.address = this.userData.address;
+          
             this.authInput.currentUserPhoto = this.userData.currentUserPhoto;
             this.authInput.changePassword = "";
         },
-        logoutHandler() {
-            this.logout();
-            this.dialog = false;
-        },
-        deleteAccountHandler() {
-            if (
-                !confirm(
-                    "Are you sure to delete your account (this action can't be undone)?"
-                )
-            ) {
-                return;
-            }
-
-            this.dialog = false;
-            this.deleteMyself();
-        }
+       
+       
     },
     created() {
         this.initialize();

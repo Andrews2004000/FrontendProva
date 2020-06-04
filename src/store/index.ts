@@ -7,10 +7,13 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    prods: [],
-    Tecnoloy:[],
-    House:[],
-    Book:[],
+    prod:[],
+    AllProducts:[],
+    TecnologyProducts : [],
+    HouseProducts:[],
+    BookProducts:[],
+   
+    
    
     userData:{
       username:null,
@@ -50,11 +53,27 @@ DELETE_ACCOUNT(state){
 state.isLoggedIn = false;
 },
 CREATE_NEW_PRODUCTS(state,payload){
-state.prods = payload;
+state.prod = payload;
 },
 CHANGE_ACCOUNT_DETAILS(state,payload){
   state.isLoggedIn = true;
   state.userData = payload;
+
+},
+ALL_PRODUCTS(state,payload){
+  state.AllProducts = payload;
+
+},
+TECNOLOGY_PRODUCTS(state,payload){
+  state.TecnologyProducts = payload;
+
+},
+BOOKS_PRODUCTS(state,payload){
+  state.BookProducts = payload;
+
+},
+HOUSE_PRODUCTS(state,payload){
+  state.HouseProducts = payload;
 
 }
   
@@ -62,8 +81,9 @@ CHANGE_ACCOUNT_DETAILS(state,payload){
     },
   
   actions: {
-    async signup({ commit },payload){
-      const result = await Api.fetchData(`users/signup`,true,'PUT',payload);
+    async Signup({ commit },payload){
+      const result = await Api.fetchData(`user/`,true,'PUT',payload);
+     
       if(!result.ok){
         return
       }
@@ -72,7 +92,8 @@ CHANGE_ACCOUNT_DETAILS(state,payload){
 
     },
     async Login({commit},payload){
-      const result = await Api.fetchData(`user/login`,true,'POST',payload)
+      const result = await Api.fetchData(`user/`,true,'POST',payload)
+  
       if(!result.ok){
         return
       }
@@ -80,8 +101,9 @@ CHANGE_ACCOUNT_DETAILS(state,payload){
       commit('LOGIN',data)
 
     },
-    async logOut({commit}){
-      const result = await Api.fetchData(`user/logout`,true,'POST')
+    async Logout({commit}){
+      const result = await Api.fetchData(`user/userUpdatings`,true,'POST')
+     
       if(!result.ok){
         return;
       }
@@ -89,43 +111,52 @@ CHANGE_ACCOUNT_DETAILS(state,payload){
 
     },
     
-    async Delete({commit}){
-      const result = await Api.fetchData(`user/logout`,true,'POST')
-if(!result.ok){
-  return
-}
-commit('DELETE_ACCOUNT')
-    },
-    async DeleteProducts({dispatch},payload){
-      const id = payload;
-      const result = await Api.fetchData(`products/${id}`,true,'DELETE');
-      if(!result.ok){
-        return;
-      }
-      dispatch('load');
+    //async DeleteAccount({commit}){
+   //   const result = await Api.fetchData(`user/logout`,true,'POST')
+//if(!result.ok){
+ // return
+//}
+//commit('DELETE_ACCOUNT')
+   // },
+  //  async DeleteProducts({dispatch},payload){
+   //   const id = payload;
+  //    const result = await Api.fetchData(`products/${id}`,true,'DELETE');
+  //    if(!result.ok){
+  //      return;
+  //    }
+      //dispatch();
+//
+  //  },
+   // async upadteProduct({dispatch},payload){
+   //   const currentRoute = router.currentRoute;
+   //   const id = currentRoute.params.id;
+    //  const result = await Api.fetchData(`products/${id}`,true,'PATCH');
+    //  if(!result.ok){
+    //    return;
+     // }
+    //  const data = result.data;
+    //  dispatch()
+    //  return data;
 
-    },
-    async upadteProduct({dispatch},payload){
-      const currentRoute = router.currentRoute;
-      const id = currentRoute.params.id;
-      const result = await Api.fetchData(`products/${id}`,true,'PATCH');
-      if(!result.ok){
-        return;
-      }
-      const data = result.data;
-      dispatch('load')
-      return data;
-
-    },
+   // },
+    //changeAccountDetails
     async changeAccountDetails({ commit }, payload) {
-      const result = await Api.fetchData(`users/account`, true, 'PATCH', payload);
+      console.log(payload)
+      const result = await Api.fetchData(`user/userUpdatings`, true, 'PATCH', payload);
+      console.log('7')
+      console.log(result)
       if (!result.ok) {
           return;
       }
+      console.log('5')
       const data = result.data;
+      console.log('6')
+      console.log(data)
       commit('CHANGE_ACCOUNT_DETAILS', data);
       return data;
   },
+
+  //Create Product
     async CreteNewProducts({commit},{userInputsData}){
 const result = await Api.fetchData(`products`,true,'POST',userInputsData)
 if(!result.ok){
@@ -135,32 +166,63 @@ const data = result.data;
 commit('CREATE_NEW_PRODUCTS',data)
 
     },
-    async load({commit,dispatch}){
-      const result = await Api.fetchData('products')
-      if(!result.ok){
-        return;
-      }
-      const allData = result.data;
-      const Tecnology = allData.filter((el:any) => el.category === 'Tecnology');
-      const House = allData.filter((el:any) => el.category === 'House')
-      const Book = allData.filter((el:any) => el.category === 'Book')
-
-commit('SETP_RODUCTS_DATA',{data:Tecnology,type:'Tecnology'});
-commit('SETP_RODUCTS_DATA',{data:House,type:'House'});
-commit('SETP_RODUCTS_DATA',{data:Book,type:'Book'});
-dispatch('restoreSession')
-    },
-    async SearchProducts({commit},{searchQuery,categoryLowerCase,categoryCamelCase}){
+   
+    async SearchProducts({commit},{searchQuery,category}){
+      
       const result = await Api.fetchData(
-        `products?category=${categoryLowerCase}&${categoryCamelCase}&${searchQuery  ?  `search=${searchQuery}` : ''}`
+        `?category=${category}`
       )
+      console.log(result)
       if(!result.ok){
         return;
       }
       const data = result.data;
-      commit('SETP_RODUCTS_DATA',{data,type:categoryCamelCase})
+      commit('SETP_RODUCTS_DATA',{data,type:category})
 
     },
+    async LoadAllProducts({commit}){
+    const result = await Api.fetchData(`products`,true,'GET')
+    console.log(result)
+    if(!result.ok){
+      return;
+    }
+    const data = result.data;
+   
+    commit('ALL_PRODUCTS',data);
+    
+
+    },
+    async LoadTecnologyProducts({commit}){
+      const result = await Api.fetchData(`products?category=Tecnology`,true,'GET')
+      if(!result.ok){
+        return;
+      }
+      const data = result.data;
+      commit('TECNOLOGY_PRODUCTS',data);
+      
+  
+      },
+      async LoadHouseProducts({commit}){
+        const result = await Api.fetchData(`products?category=House`,true,'GET')
+        console.log(result)
+        if(!result.ok){
+          return;
+        }
+        const data = result.data;
+        commit('HOUSE_PRODUCTS',data)
+        
+    
+        },
+        async LoadBooksProducts({commit}){
+          const result = await Api.fetchData(`products?category=Book`,true,'GET')
+          if(!result.ok){
+            return;
+          }
+          const data = result.data;
+          commit('BOOKS_PRODUCTS',data)
+          
+      
+          }
    
 },
 })

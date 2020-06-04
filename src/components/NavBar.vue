@@ -8,7 +8,7 @@
                <span class="store orange--text">Store</span>
                </v-toolbar-title>
                <v-spacer></v-spacer>
-               <span class="fa fa-shopping-cart mode-1" v-if="homePage"></span>
+               <span class="fa fa-shopping-cart mode-1" v-if="isLoggedIn"></span>
 
                <span class="fa fa-user cerca" @click="dialog = !dialog" v-else></span>
                <div class="ball orange" v-if="homePage">
@@ -30,10 +30,10 @@
              
   
  
-  
-           <v-btn class="user" router-view to="/Account" v-if="isLoggedIn">Account </v-btn>
            <span class="fa fa-user mode"></span>
-           <v-btn class="btn-5 orange"><span class="LoginDetail">Login</span></v-btn>
+           <v-btn class="user orange" router-view to="/Account"  v-if="isLoggedIn">Account </v-btn>
+  
+           <v-btn class="btn-5 orange" v-if="!isLoggedIn"><span class="LoginDetail" >Login</span></v-btn>
 
 
  
@@ -53,7 +53,7 @@
            <v-spacer>
 
            </v-spacer>
-           <v-btn class="btn" v-if="isLoggedIn">LOGOUT</v-btn>
+           <v-btn class="btn success" @click="LogoutHanlder" v-if="isLoggedIn">LOGOUT</v-btn>
 
        </v-navigation-drawer>
       
@@ -93,11 +93,20 @@
                                             :rules="rules.passwordRules"
                                         ></v-text-field>
                                     </v-col>
+                                    <v-col cols="12">
+                                        <v-text-field
+                                            label="Password"
+                                            type="password"
+                                            required
+                                            v-model="userData.passwordConfirmation"
+                                            :rules="rules.passwordConfirmation"
+                                        ></v-text-field>
+                                    </v-col>
                                     </v-row>
                                     </v-container>
 
                                     <small>
-                        <a @click="isAlreadyRegistered = false">Not registered yet? Sign up now</a>
+                        <a @click="isAlreadyRegistered = true">Already registered,sign in</a>
                     </small>
                     </v-card-text>
                             <v-card-actions>
@@ -105,7 +114,7 @@
 
                                
   <v-btn color="blue darken-1" text @click="dialog = false">Close</v-btn>
-            <v-btn color="blue darken-1" text @click="signUpHanlder">Save</v-btn>
+            <v-btn color="blue darken-1" text @click="SignUpHandler">Save</v-btn>
                             </v-card-actions>
                                
                                   
@@ -138,7 +147,7 @@
                                 </v-container>
                                
                                <small>
-                        <a @click="isAlreadyRegistered = true">Already registered? Log in now</a>
+                        <a @click="isAlreadyRegistered = false">Not ?</a>
                     </small>
                     </v-card-text>
                     <v-card-actions>
@@ -149,7 +158,7 @@
                        
   <div class="bottoni">
   <v-btn color="blue darken-1" text @click="dialog = false">Close</v-btn>
-            <v-btn color="blue darken-1" text @click="loginHandler">Save</v-btn>
+            <v-btn color="blue darken-1" @click="LoginHandler" text >Save</v-btn>
                             
                                 </div>
                     </v-card-actions>
@@ -169,7 +178,7 @@
   
 </template>
 <script>
-import { mapState ,mapActions} from "vuex";
+import {mapActions,mapState} from 'vuex';
 import authInput from '../mixins/authInput';
 export default {
     mixins:[authInput],
@@ -178,7 +187,7 @@ export default {
             drawer:false,
             dialog:false,
             valid:false,
-            Exist:false,
+            
             isAlreadyRegistered:true,
             isLoginDataValid:true,
             isSignUpDataValid:true,
@@ -202,28 +211,41 @@ export default {
         }
     },
     methods:{
-          ...mapActions(["signup", "login"]),
+      ...mapActions(['Signup','Login','Logout']),
+      async SignUpHandler(){
+          if(this.isSignUpDataValid){
+              await this.Signup(this.userData)
+              this.dialog = false;
+          }
+      },
+       async LoginHandler() {
+            if (this.isLoginDataValid) {
+                await this.Login(this.userData);
+
+                this.dialog = false;
+            }
+        },
+        async LogoutHanlder() {
+            await this.Logout()
+
+        },
       
         GoAway(){
             this.$route.push('/')
         },
-        async signUpHanlder(){
-            if(this.isSignUpDataValid){
-                await this.signup(this.userData)
-                this.dialog = false;
-            }
-            
-
-        },
-        async loginHandler(){
-            if(this.isLoginDataValid){
-                await this.login(this.userData);
-                this.dialog = false;
-            }
-            
-        }
+       
        
 
+    },
+      watch: {
+        isAlreadyRegistered() {
+            if (this.$refs.signupForm) {
+                this.$refs.signupForm.resetValidation();
+            }
+            if (this.$refs.loginForm) {
+                this.$refs.loginForm.resetValidation();
+            }
+        }
     },
     computed: {
       homePage() {
@@ -233,21 +255,11 @@ export default {
           return false
         }
       },
-      ...mapState(["isLoggedIn","userData"]),
+      ...mapState(["isLoggedIn"])
+     
      
     },
-    watch:{
-        isAlreadyRegistered(){
-            if(this.$refs.signUpForm){
-            this.$refs.signUpForm.resetValidation();
-
-        }
-        if(this.$refs.LoginForm){
-            this.$refs.LoginForm.resetValidation();
-        }
-        
-    }
-    }
+  
     
 }
 </script>

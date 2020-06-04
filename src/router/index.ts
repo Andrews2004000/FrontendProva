@@ -19,7 +19,7 @@ Vue.use(VueRouter)
     component: Main
   },
   {
-    path: '/EditProduct',
+    path: '/EditProduct/:id',
     name: 'Edit',
     component: EditProduct
   },
