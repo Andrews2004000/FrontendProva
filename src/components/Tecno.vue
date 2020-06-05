@@ -40,6 +40,7 @@
            
 
             <v-chip
+           
         class="ma-2 cip"
         color="indigo"
         outlined

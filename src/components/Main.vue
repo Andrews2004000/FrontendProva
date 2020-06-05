@@ -91,7 +91,7 @@
             multiple
             active-class="primary--text"
           >
-            <v-chip v-for="tag in tags" :key="tag">
+            <v-chip v-for="tag in tags" :key="tag" >
               {{ tag }}
             </v-chip>
           </v-chip-group>
@@ -202,16 +202,17 @@ export default {
       this.$store.dispatch('LoadAllProducts')
 
     },
-    mounted(){
- 
-    },
 
     
     computed:{
+      ...mapState(["isLoggedIn","userData","AllProducts","AllTags"]),
       products(){
         return this.$store.state.AllProducts
       },
-      ...mapState(["isLoggedIn"])
+    
+     
+      
+      
     
      
 

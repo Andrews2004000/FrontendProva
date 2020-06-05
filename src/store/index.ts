@@ -12,7 +12,11 @@ export default new Vuex.Store({
     TecnologyProducts : [],
     HouseProducts:[],
     BookProducts:[],
-   
+   AllTags:{
+     Tecno:['videogames','phones','computers'],
+     House:['livingRoom','bedroom','garden'],
+     Book:['fantasy','history','action']
+   },
     
    
     userData:{
@@ -182,16 +186,20 @@ commit('CREATE_NEW_PRODUCTS',data)
     },
     async LoadAllProducts({commit}){
     const result = await Api.fetchData(`products`,true,'GET')
-    console.log(result)
+  
     if(!result.ok){
       return;
     }
+  
     const data = result.data;
+
+   
    
     commit('ALL_PRODUCTS',data);
     
 
     },
+    
     async LoadTecnologyProducts({commit}){
       const result = await Api.fetchData(`products?category=Tecnology`,true,'GET')
       if(!result.ok){
