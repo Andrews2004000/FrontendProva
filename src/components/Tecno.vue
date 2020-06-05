@@ -29,7 +29,9 @@
         <v-text-field
         outlined
               label="search"
+              v-model="searchField"
               prepend-inner-icon="fa fa-search"
+              v-debounce:300ms="searchHanlder"
             ></v-text-field>
             </v-col>
              </v-row>
@@ -39,7 +41,7 @@
 
            
 
-            <v-chip
+       <!---     <v-chip
            
         class="ma-2 cip"
         color="indigo"
@@ -63,12 +65,25 @@
       >
         <v-icon class="fa fa-mobile" left></v-icon>
        Phones
-      </v-chip>
+      </v-chip>-->
+       <v-chip-group
+            mandatory
+            active-class="primary white--text"
+            class="d-flex mb-5"
+            multiple
+            @change="changeHandler"
+            :value="valueIndexes"
+        >
+            <v-chip v-for="tag in tags" :key="tag">
+                {{ tag }}
+            </v-chip>
+        </v-chip-group>
        </div>
            
    </div>
 
  <div>
+   
      <v-container class="pinoto">
             <v-row >
                 <v-col  v-for="product in products" :key="product.id"  :products="products">
@@ -110,9 +125,15 @@
     </div>
 </template>
 <script>
-import {mapState} from 'vuex'
+import {mapState,mapActions} from 'vuex'
 import NavBar from './NavBar'
 export default {
+    data(){
+        return{
+            searchField:"",
+              selectedTagsIndexes: [],
+        }
+    },
     components:{
         NavBar
     },
@@ -120,14 +141,54 @@ export default {
         this.$store.dispatch('LoadTecnologyProducts')
 
     },
+    methods:{
+        ...mapActions(["SearchProducts","LoadTagsTecnologyProducts"]),
+        
+        changeHandler(tagIndexes) {
+            let tags;
+            if (tagIndexes.length) {
+                tags = tagIndexes.sort().map((i) => this.tags[i]);
+            } else {
+                tags = [];
+            }
+            this.$emit('input', tags);
+        },
+        searchHanlder() {
+            console.log("Sto Ceracndo");
+            const searchField = this.searchField;
+            const searchQuery = searchField.split(" ").join("+");
+            console.log(searchQuery);
+            this.SearchProducts({ searchQuery, categoryType: "TecnologyProducts" });
+        },
+          
+       
+
+    },
     computed:{
+             
+       valueIndexes() {
+            let indexes = [];
+            if (this.value && this.tags) {
+                indexes = this.value.map((tag) => {
+                    return this.tags.indexOf(tag);
+                });
+                indexes = indexes.filter((i) => i !== -1);
+            }
+            return indexes;
+        },
+        
+    
         products(){
             return this.$store.state.TecnologyProducts
         },
-         ...mapState(["isLoggedIn"])
-    
-    }
+         ...mapState(["isLoggedIn","TecnologyProducts","AllTags"]),
+      
+       }
 }
+    
+    
+    
+
 </script>
 <style scoped>
 .image-container{

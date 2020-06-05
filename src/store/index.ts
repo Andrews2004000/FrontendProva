@@ -8,6 +8,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     prod:[],
+  
+    videogames: [],
     AllProducts:[],
     TecnologyProducts : [],
     HouseProducts:[],
@@ -72,6 +74,7 @@ TECNOLOGY_PRODUCTS(state,payload){
   state.TecnologyProducts = payload;
 
 },
+
 BOOKS_PRODUCTS(state,payload){
   state.BookProducts = payload;
 
@@ -171,17 +174,17 @@ commit('CREATE_NEW_PRODUCTS',data)
 
     },
    
-    async SearchProducts({commit},title){
+    async SearchProducts({commit},{searchQuery,categoryType}){
       
       const result = await Api.fetchData(
-        `products?search=${title}`
+        `products?search=${searchQuery}`
       )
       console.log(result)
       if(!result.ok){
         return;
       }
       const data = result.data;
-      commit('SETP_RODUCTS_DATA',{data,type:title})
+      commit('SETP_RODUCTS_DATA',{data,type:categoryType})
 
     },
     async LoadAllProducts({commit}){
@@ -206,10 +209,13 @@ commit('CREATE_NEW_PRODUCTS',data)
         return;
       }
       const data = result.data;
+ 
+      
       commit('TECNOLOGY_PRODUCTS',data);
       
   
       },
+      
       async LoadHouseProducts({commit}){
         const result = await Api.fetchData(`products?category=House`,true,'GET')
         console.log(result)

@@ -28,8 +28,10 @@
        <v-col cols="12" sm="12">
         <v-text-field
         outlined
+           v-model="searchField"
               label="search"
               prepend-inner-icon="fa fa-search"
+              v-debounce:300ms ="searchHanlder"
             ></v-text-field>
             </v-col>
              </v-row>
@@ -111,11 +113,28 @@
     </div>
 </template>
 <script>
-import {mapState} from 'vuex'
+import {mapState,mapActions} from 'vuex'
 import NavBar from './NavBar'
 export default {
+    data(){
+        return{
+            searchField:""
+        }
+
+    },
     components:{
         NavBar
+    },
+     methods:{
+        ...mapActions(["SearchProducts"]),
+        searchHanlder() {
+            console.log("Sto Ceracndo");
+            const searchField = this.searchField;
+            const searchQuery = searchField.split(" ").join("+");
+            console.log(searchQuery);
+            this.SearchProducts({ searchQuery, categoryType: "HouseProducts" });
+        }
+
     },
     created() {
         this.$store.dispatch('LoadHouseProducts')
