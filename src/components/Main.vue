@@ -30,7 +30,12 @@
        <v-col cols="12" sm="12">
         <v-text-field
         outlined
+        dense
+        hide-details
+        v-model="searchField"
+         v-debounce:300="searchHanlder"
               label="search"
+                class="mx-sm-10 mx-md-0 mr-md-10 mb-3 mb-md-0"
               prepend-inner-icon="fa fa-search"
             ></v-text-field>
             </v-col>
@@ -136,7 +141,7 @@
     
 </template>
 <script>
-import {mapState} from 'vuex'
+import {mapState,mapActions} from 'vuex'
 import NavBar from './NavBar'
 
 export default {
@@ -182,7 +187,15 @@ export default {
             NavBar
     },
     methods:{
-      
+      ...mapActions(['SearchProducts']),
+      searchHanlder() {
+        console.log('Sto Ceracndo')
+        const searchField = this.searchField;
+        const searchQuery = searchField.split(" ").join("+")
+        this.SearchProducts({
+          searchQuery
+        })
+      }
 
     },
     created(){

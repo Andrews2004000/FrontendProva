@@ -8,7 +8,7 @@
               
                </v-toolbar-title>
                <v-spacer></v-spacer>
-             <v-btn class="orange text" @click="changeAccountDetails">Save</v-btn>
+             <v-btn class="orange text" @click="ChangeAccountDetails" >Save</v-btn>
 
         </v-app-bar>
            <v-expansion-panels class="pannel-body">
@@ -100,7 +100,6 @@ export default {
         return{
             authInput:{},
             isAuthInputValid:true,
-            
              inputUser:[
             v => v.length >= 5 || 'Minimun Length is 5 Characthers'
         ],
@@ -118,12 +117,6 @@ export default {
 if(this.isAuthInputValid){
     console.log('1')
     const inputData = {...this.authInput};
-    Object.keys(inputData).forEach(k=>{
-        console.log('2')
-        if(!inputData[k]){
-            delete inputData[k];
-        }
-    });
     console.log('3')
     const data = await this.changeAccountDetails(inputData);
     console.log(data)

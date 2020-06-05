@@ -167,17 +167,17 @@ commit('CREATE_NEW_PRODUCTS',data)
 
     },
    
-    async SearchProducts({commit},{searchQuery,category}){
+    async SearchProducts({commit},title){
       
       const result = await Api.fetchData(
-        `?category=${category}`
+        `products?search=${title}`
       )
       console.log(result)
       if(!result.ok){
         return;
       }
       const data = result.data;
-      commit('SETP_RODUCTS_DATA',{data,type:category})
+      commit('SETP_RODUCTS_DATA',{data,type:title})
 
     },
     async LoadAllProducts({commit}){
